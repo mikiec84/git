@@ -4726,14 +4726,6 @@ static int parse_dirstat_opt(struct diff_options *options, const char *params)
 	return 1;
 }
 
-static int parse_submodule_opt(struct diff_options *options, const char *value)
-{
-	if (parse_submodule_params(options, value))
-		die(_("Failed to parse --submodule option parameter: '%s'"),
-			value);
-	return 1;
-}
-
 static const char diff_status_letters[] = {
 	DIFF_STATUS_ADDED,
 	DIFF_STATUS_COPIED,
@@ -5081,6 +5073,20 @@ static int diff_opt_relative(const struct option *opt,
 	return 0;
 }
 
+static int diff_opt_submodule(const struct option *opt,
+			      const char *arg, int unset)
+{
+	struct diff_options *options = opt->value;
+
+	BUG_ON_OPT_NEG(unset);
+	if (!arg)
+		arg = "log";
+	if (parse_submodule_params(options, arg))
+		return error(_("failed to parse --submodule option parameter: '%s'"),
+			     arg);
+	return 0;
+}
+
 static int diff_opt_textconv(const struct option *opt,
 			     const char *arg, int unset)
 {
@@ -5344,6 +5350,10 @@ static void prep_parse_options(struct diff_options *options)
 			       N_("ignore changes to submodules in the diff generation"),
 			       PARSE_OPT_NONEG | PARSE_OPT_OPTARG,
 			       diff_opt_ignore_submodules),
+		OPT_CALLBACK_F(0, "submodule", options, N_("<format>"),
+			       N_("specify how differences in submodules are shown"),
+			       PARSE_OPT_NONEG | PARSE_OPT_OPTARG,
+			       diff_opt_submodule),
 		{ OPTION_CALLBACK, 0, "output", options, N_("<file>"),
 		  N_("Output to a specific file"),
 		  PARSE_OPT_NONEG, NULL, 0, diff_opt_output },
@@ -5393,9 +5403,7 @@ int diff_opt_parse(struct diff_options *options,
 		if (cm & COLOR_MOVED_WS_ERROR)
 			return -1;
 		options->color_moved_ws_handling = cm;
-	} else if (skip_to_optional_arg_default(arg, "--submodule", &arg, "log"))
-		return parse_submodule_opt(options, arg);
-	else if (skip_prefix(arg, "--ws-error-highlight=", &arg))
+	} else if (skip_prefix(arg, "--ws-error-highlight=", &arg))
 		return parse_ws_error_highlight_opt(options, arg);
 	else if (!strcmp(arg, "--ita-invisible-in-index"))
 		options->ita_invisible_in_index = 1;
