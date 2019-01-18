@@ -104,10 +104,12 @@ static const char *color_diff_slots[] = {
 	[DIFF_FILE_NEW_BOLD]	      = "newBold",
 };
 
+#if 0
 static NORETURN void die_want_option(const char *option_name)
 {
 	die(_("option '%s' requires a value"), option_name);
 }
+#endif
 
 define_list_config_array_extra(color_diff_slots, {"plain"});
 
@@ -4578,6 +4580,7 @@ void diff_setup_done(struct diff_options *options)
 	FREE_AND_NULL(options->parseopts);
 }
 
+#if 0
 static int opt_arg(const char *arg, int arg_short, const char *arg_long, int *val)
 {
 	char c, *eq;
@@ -4621,6 +4624,7 @@ static int opt_arg(const char *arg, int arg_short, const char *arg_long, int *va
 	}
 	return 1;
 }
+#endif
 
 static inline int short_opt(char opt, const char **argv,
 			    const char **optarg)
