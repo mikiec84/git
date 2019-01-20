@@ -35,7 +35,7 @@ while (<>) {
 		chomp;
 	}
 
-	/\bsed\s+-i/ and err 'sed -i is not portable';
+	/\bsed\s+-[^efn]\s+/ and err 'Not portable option with sed (use only [-n] [-e command] [-f command_file])';
 	/\becho\s+-[neE]/ and err 'echo with option is not portable (use printf)';
 	/^\s*declare\s+/ and err 'arrays/declare not portable';
 	/^\s*[^#]\s*which\s/ and err 'which is not portable (use type)';
